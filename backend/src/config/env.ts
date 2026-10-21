@@ -18,9 +18,21 @@ const positiveInt = (name: string, fallback: number): number => {
   return value;
 };
 
+const isProduction = process.env.NODE_ENV === 'production';
+
+/**
+ * En producción JWT_SECRET es obligatorio. En desarrollo se permite un secreto
+ * de respaldo para que `npm install && npm run dev` funcione sin crear `.env`.
+ */
+const jwtSecret = (): string => {
+  if (process.env.JWT_SECRET || isProduction) return required('JWT_SECRET');
+  console.warn('[config] JWT_SECRET no definido: usando un secreto solo para desarrollo.');
+  return 'dev-only-insecure-secret';
+};
+
 export const env = {
   port: positiveInt('PORT', 3000),
-  jwtSecret: required('JWT_SECRET'),
+  jwtSecret: jwtSecret(),
   /** Segundos de validez del JWT (el contrato expone `expiresIn` en segundos). */
   jwtExpiresIn: positiveInt('JWT_EXPIRES_IN', 3600),
   corsOrigin: process.env.CORS_ORIGIN ?? 'http://localhost:5173',
