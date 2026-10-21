@@ -1,3 +1,4 @@
+import { LoginForm } from '../components/auth/LoginForm';
 import { AuthLayout } from '../components/layout/AuthLayout';
 import { Alert } from '../components/ui/Alert';
 import { useAuth } from '../context/auth';
@@ -22,7 +23,7 @@ export function LoginPage() {
           </Alert>
         )}
 
-        {/* El formulario de login se implementa en la Fase 6. */}
+        <LoginForm />
       </div>
     </AuthLayout>
   );

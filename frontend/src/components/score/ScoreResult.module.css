@@ -1,0 +1,184 @@
+.card {
+  --band-color: var(--color-forest);
+  --band-soft: var(--color-sand-soft);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  border-top: 6px solid var(--band-color);
+}
+
+@media (min-width: 640px) {
+  .card {
+    padding: var(--space-6);
+  }
+}
+
+.high {
+  --band-color: var(--color-coral);
+  --band-soft: var(--color-coral-soft);
+  --band-text: var(--color-danger);
+}
+
+.medium {
+  --band-color: var(--color-amber);
+  --band-soft: var(--color-amber-soft);
+  --band-text: var(--color-warning);
+}
+
+.low {
+  --band-color: var(--color-mint);
+  --band-soft: var(--color-mint-soft);
+  --band-text: var(--color-success);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.rut {
+  font-size: var(--text-xl);
+  font-weight: 800;
+}
+
+.rut:focus {
+  outline: none;
+}
+
+.scoreRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4) var(--space-6);
+}
+
+.score {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
+  font-family: var(--font-display);
+  font-stretch: var(--display-stretch);
+  letter-spacing: var(--display-tracking);
+  line-height: 1;
+}
+
+.scoreValue {
+  font-size: clamp(3.5rem, 2.5rem + 5vw, 5.5rem);
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.scoreMax {
+  font-size: var(--text-xl);
+  color: var(--color-text-muted);
+}
+
+.bandInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.bandBadge {
+  align-self: flex-start;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--band-soft);
+  color: var(--band-text);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+.bandDescription {
+  color: var(--color-text-muted);
+}
+
+.gauge {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.track {
+  position: relative;
+  height: 10px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(
+    to right,
+    var(--color-coral) 0 40%,
+    var(--color-amber) 40% 70%,
+    var(--color-mint) 70% 100%
+  );
+}
+
+.marker {
+  position: absolute;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  border: 4px solid var(--color-surface);
+  border-radius: 50%;
+  background: var(--color-forest);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 25%);
+  transform: translate(-50%, -50%);
+}
+
+.scale {
+  position: relative;
+  height: 1rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.scale span {
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+.scale span:nth-child(1) {
+  left: 0;
+  transform: none;
+}
+
+.scale span:nth-child(2) {
+  left: 40%;
+}
+
+.scale span:nth-child(3) {
+  left: 70%;
+}
+
+.scale span:nth-child(4) {
+  right: 0;
+  transform: none;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+}
+
+.note {
+  color: var(--color-text-muted);
+}

@@ -18,3 +18,68 @@
 .subtitle {
   color: var(--color-text-muted);
 }
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+}
+
+@media (min-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    align-items: start;
+  }
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.validHint {
+  color: var(--color-success);
+  font-weight: 500;
+}
+
+.inlineAction {
+  margin-top: var(--space-2);
+  padding: 0;
+  text-align: left;
+  border: 0;
+  background: none;
+  color: var(--color-violet);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  color: var(--color-text);
+}
+
+.emptyTitle {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.aside {
+  min-width: 0;
+}

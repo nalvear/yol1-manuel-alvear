@@ -88,6 +88,28 @@ SPA con React + TypeScript (Vite) y React Router.
   - cuando el usuario cierra sesión.
 - **Rutas**: `/login` es solo para quien no tiene sesión y `/score` solo para quien la tiene.
 
+### Controles de usabilidad para evitar errores
+
+**Login**
+- Valida en el cliente antes de llamar a la API y lleva el foco al primer campo con error.
+- Los errores aparecen al enviar, o al salir de un campo que ya se editó. Nunca mientras se escribe.
+- El error reemplaza al texto de ayuda en el mismo espacio. Así el formulario no se desplaza y un clic no cae fuera del botón.
+- Durante el envío los campos se deshabilitan y se bloquea el doble envío.
+- Hay un botón para mostrar u ocultar la contraseña y un aviso cuando Bloq Mayús está activado.
+- Los campos usan `autocomplete` para que funcionen los gestores de contraseñas y tienen los largos máximos del contrato.
+- Si las credenciales fallan, se limpia la contraseña y el foco vuelve a ese campo.
+- El panel "Usuarios de prueba" completa el formulario con los usuarios mock.
+
+**Consulta de score**
+- El RUT se formatea mientras se escribe (`12.345.678-5`). Solo acepta dígitos y una K final, y limita el largo.
+- El dígito verificador se valida en el cliente, lo que evita los `400` que se pueden prevenir.
+- **Chequeo anticipado de permisos**: si un `user` escribe un RUT que no es el suyo, se le avisa de inmediato y no se envía la consulta. El mensaje ofrece el atajo "Usar mi RUT". El `403` del backend se sigue manejando por si llega.
+- Para el rol `user`, el campo parte con su propio RUT.
+- Se ignoran las respuestas de consultas anteriores que lleguen tarde.
+- Al terminar, el foco pasa al resultado para que los lectores de pantalla lo anuncien. El medidor del score usa `role="meter"`.
+- Un historial de la sesión muestra las últimas 5 consultas para revisarlas sin volver a consultar.
+- Tramos del score (supuesto: a mayor score, menor riesgo): 0–39 riesgo alto, 40–69 medio, 70–100 bajo.
+
 > Trade-off: una cookie `httpOnly` protegería mejor el token frente a XSS, pero requiere cambiar el contrato del API. Queda como mejora.
 
 ## Uso de IA
