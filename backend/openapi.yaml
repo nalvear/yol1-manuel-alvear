@@ -1,0 +1,390 @@
+openapi: 3.1.0
+info:
+  title: API de Consulta de Riesgo Financiero
+  version: 1.0.0
+  description: |
+    MVP para consultar el *score* crediticio de personas o empresas a partir de su RUT,
+    con autenticación JWT y autorización basada en roles.
+
+    ## Autenticación
+
+    1. `POST /login` con credenciales *mock* devuelve un JWT firmado (HS256).
+    2. Los endpoints protegidos exigen el header `Authorization: Bearer <token>`.
+
+    ### Payload del JWT
+
+    | Claim  | Tipo     | Descripción                                              |
+    |--------|----------|----------------------------------------------------------|
+    | `sub`  | string   | ID del usuario.                                          |
+    | `role` | string   | `admin` o `user`.                                        |
+    | `rut`  | string   | RUT normalizado del usuario. **Solo presente si `role` es `user`.** |
+    | `iat`  | integer  | Fecha de emisión (epoch, segundos).                      |
+    | `exp`  | integer  | Fecha de expiración (epoch, segundos).                   |
+
+    ## Reglas de autorización
+
+    | Rol     | Puede consultar `GET /score/{rut}`                              |
+    |---------|-----------------------------------------------------------------|
+    | `admin` | Cualquier RUT válido.                                           |
+    | `user`  | Solo su propio RUT (el claim `rut` de su token). Otro RUT → `403`. |
+
+    La comparación se hace sobre RUTs **normalizados** (sin puntos ni guion, con la `K`
+    en mayúscula), por lo que `12.345.678-5`, `12345678-5` y `123456785` son el mismo RUT.
+
+    ## Orden de evaluación en endpoints protegidos
+
+    1. **Autenticación**: falta el token, la firma es inválida o el token expiró → `401`.
+    2. **Validación**: el RUT tiene formato o dígito verificador inválido → `400`.
+    3. **Autorización**: el rol no permite consultar ese RUT → `403`.
+
+    ## Formato de errores
+
+    Todas las respuestas de error usan el esquema `Error`:
+    `{ "error": { "code": "<CODIGO>", "message": "<texto legible>" } }`.
+    El campo `code` es estable y apto para lógica en el cliente; `message` es solo informativo.
+servers:
+  - url: http://localhost:3000
+    description: Desarrollo local
+tags:
+  - name: Auth
+    description: Autenticación con credenciales mock.
+  - name: Score
+    description: Consulta de score financiero por RUT.
+  - name: Sistema
+    description: Salud del servicio.
+
+paths:
+  /health:
+    get:
+      tags: [Sistema]
+      operationId: health
+      summary: Estado del servicio
+      security: []
+      responses:
+        '200':
+          description: El servicio está operativo.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    const: ok
+
+  /login:
+    post:
+      tags: [Auth]
+      operationId: login
+      summary: Iniciar sesión y obtener un JWT
+      description: |
+        Valida credenciales contra usuarios *mock* en memoria (sin base de datos) y
+        devuelve un JWT firmado. Para el rol `user` el token incluye el claim `rut`;
+        para `admin`, no.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            examples:
+              user:
+                summary: Usuario con rol user
+                value: { username: usuario, password: usuario123 }
+              admin:
+                summary: Usuario con rol admin
+                value: { username: admin, password: admin123 }
+      responses:
+        '200':
+          description: Autenticación exitosa.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              examples:
+                user:
+                  summary: Respuesta para rol user
+                  value:
+                    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                    tokenType: Bearer
+                    expiresIn: 3600
+                    user: { id: u-002, role: user, rut: 12.345.678-5 }
+                admin:
+                  summary: Respuesta para rol admin (sin rut)
+                  value:
+                    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                    tokenType: Bearer
+                    expiresIn: 3600
+                    user: { id: u-001, role: admin }
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          description: Credenciales incorrectas. El mensaje es genérico para no revelar si el usuario existe.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: INVALID_CREDENTIALS
+                  message: Usuario o contraseña incorrectos.
+
+  /score/{rut}:
+    get:
+      tags: [Score]
+      operationId: getScore
+      summary: Consultar el score financiero de un RUT
+      description: |
+        Devuelve el score crediticio (0 a 100) del RUT indicado.
+
+        **Determinista**: el mismo RUT siempre produce el mismo `score`, y RUTs distintos
+        producen valores distintos (derivado de un hash del RUT normalizado). El campo
+        `fecha` corresponde al momento de la consulta.
+
+        **Autorización**:
+        - `admin`: puede consultar cualquier RUT.
+        - `user`: solo puede consultar el RUT de su propio token; cualquier otro → `403`.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Rut'
+      responses:
+        '200':
+          description: Score calculado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScoreResponse'
+              example:
+                rut: 12.345.678-5
+                score: 73
+                fecha: '2025-06-27T14:35:00Z'
+        '400':
+          description: El RUT tiene formato o dígito verificador inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: INVALID_RUT
+                  message: El RUT ingresado no es válido.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: El rol del usuario no permite consultar este RUT (rol `user` consultando un RUT ajeno).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: FORBIDDEN_RUT
+                  message: No tienes permiso para consultar este RUT.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT obtenido en `POST /login`, firmado con HS256.
+
+  parameters:
+    Rut:
+      name: rut
+      in: path
+      required: true
+      description: |
+        RUT chileno con dígito verificador. Se acepta con o sin puntos y con o sin guion;
+        la `k` puede ir en minúscula o mayúscula.
+      schema:
+        type: string
+        pattern: '^[0-9]{1,2}(\.?[0-9]{3}){2}-?[0-9kK]$'
+      examples:
+        conFormato:
+          value: 12.345.678-5
+        sinPuntos:
+          value: 12345678-5
+        normalizado:
+          value: '123456785'
+
+  responses:
+    ValidationError:
+      description: El cuerpo de la petición no cumple el esquema.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: VALIDATION_ERROR
+              message: Los campos username y password son obligatorios.
+              details:
+                - field: password
+                  message: Requerido
+    Unauthorized:
+      description: |
+        No autenticado. Posibles `code`:
+        - `MISSING_TOKEN`: no se envió el header `Authorization: Bearer <token>`.
+        - `INVALID_TOKEN`: la firma o el formato del token no son válidos.
+        - `TOKEN_EXPIRED`: el token superó su `exp`; el cliente debe volver a iniciar sesión.
+      headers:
+        WWW-Authenticate:
+          description: Desafío de autenticación según RFC 6750.
+          schema:
+            type: string
+            example: Bearer error="invalid_token", error_description="Token expirado"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            missingToken:
+              summary: Sin token
+              value:
+                error: { code: MISSING_TOKEN, message: Se requiere un token de autenticación. }
+            invalidToken:
+              summary: Token inválido
+              value:
+                error: { code: INVALID_TOKEN, message: El token no es válido. }
+            expiredToken:
+              summary: Token vencido
+              value:
+                error: { code: TOKEN_EXPIRED, message: 'La sesión expiró, inicia sesión nuevamente.' }
+
+  schemas:
+    LoginRequest:
+      type: object
+      additionalProperties: false
+      required: [username, password]
+      properties:
+        username:
+          type: string
+          minLength: 1
+          maxLength: 100
+        password:
+          type: string
+          minLength: 1
+          maxLength: 200
+          format: password
+
+    LoginResponse:
+      type: object
+      required: [token, tokenType, expiresIn, user]
+      properties:
+        token:
+          type: string
+          description: JWT firmado (ver `JwtPayload`).
+        tokenType:
+          type: string
+          const: Bearer
+        expiresIn:
+          type: integer
+          description: Segundos hasta la expiración del token.
+          example: 3600
+        user:
+          $ref: '#/components/schemas/AuthUser'
+
+    AuthUser:
+      description: Datos públicos del usuario autenticado. `rut` es obligatorio para `user` y no existe para `admin`.
+      oneOf:
+        - type: object
+          additionalProperties: false
+          required: [id, role, rut]
+          properties:
+            id: { type: string }
+            role: { type: string, const: user }
+            rut:
+              type: string
+              description: RUT formateado del usuario.
+              example: 12.345.678-5
+        - type: object
+          additionalProperties: false
+          required: [id, role]
+          properties:
+            id: { type: string }
+            role: { type: string, const: admin }
+
+    JwtPayload:
+      description: |
+        Claims del JWT (referencia; no es un cuerpo de request/response).
+        `rut` solo existe cuando `role` es `user`.
+      oneOf:
+        - type: object
+          required: [sub, role, rut, iat, exp]
+          properties:
+            sub: { type: string }
+            role: { type: string, const: user }
+            rut:
+              type: string
+              description: RUT normalizado (sin puntos ni guion).
+              example: '123456785'
+            iat: { type: integer }
+            exp: { type: integer }
+        - type: object
+          required: [sub, role, iat, exp]
+          not:
+            required: [rut]
+          properties:
+            sub: { type: string }
+            role: { type: string, const: admin }
+            iat: { type: integer }
+            exp: { type: integer }
+
+    ScoreResponse:
+      type: object
+      additionalProperties: false
+      required: [rut, score, fecha]
+      properties:
+        rut:
+          type: string
+          description: RUT consultado, en formato `XX.XXX.XXX-X`.
+          example: 12.345.678-5
+        score:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Score financiero determinista para el RUT.
+          example: 73
+        fecha:
+          type: string
+          format: date-time
+          description: Momento de la consulta (ISO 8601, UTC).
+          example: '2025-06-27T14:35:00Z'
+
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              description: Código estable del error.
+              enum:
+                - VALIDATION_ERROR
+                - INVALID_CREDENTIALS
+                - INVALID_RUT
+                - MISSING_TOKEN
+                - INVALID_TOKEN
+                - TOKEN_EXPIRED
+                - FORBIDDEN_RUT
+                - NOT_FOUND
+                - INTERNAL_ERROR
+            message:
+              type: string
+              description: Mensaje legible para el usuario final.
+            details:
+              type: array
+              description: Detalle por campo (solo en `VALIDATION_ERROR`).
+              items:
+                type: object
+                required: [field, message]
+                properties:
+                  field: { type: string }
+                  message: { type: string }
