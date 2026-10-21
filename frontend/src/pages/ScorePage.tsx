@@ -12,11 +12,13 @@ import { useAuth } from '../context/auth';
 import { useFocusWhenIdle } from '../hooks/useFocusWhenIdle';
 import { messageForCode, messageForError, type UserMessage } from '../utils/messages';
 import { isSameRut, RUT_ERROR_MESSAGES, validateRut } from '../utils/rut';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import styles from './ScorePage.module.css';
 
 const HISTORY_LIMIT = 5;
 
 export function ScorePage() {
+  useDocumentTitle('Consulta de score');
   const { session } = useAuth();
   const user = session?.user;
   const ownRut = user?.role === 'user' ? user.rut : null;

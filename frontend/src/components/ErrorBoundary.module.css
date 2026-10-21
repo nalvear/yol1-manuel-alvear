@@ -1,0 +1,10 @@
+.fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 480px;
+  margin: var(--space-8) auto;
+  padding: 0 var(--space-4);
+}

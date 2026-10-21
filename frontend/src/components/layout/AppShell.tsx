@@ -3,6 +3,7 @@ import { useAuth } from '../../context/auth';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import styles from './AppShell.module.css';
+import { SessionExpiryNotice } from './SessionExpiryNotice';
 import { Wordmark } from './Wordmark';
 
 const ROLE_LABEL = { admin: 'Administrador', user: 'Usuario' } as const;
@@ -36,6 +37,7 @@ export function AppShell() {
             </div>
           )}
         </div>
+        <SessionExpiryNotice />
       </header>
       <main className={styles.main}>
         <Outlet />

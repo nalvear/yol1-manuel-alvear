@@ -3,9 +3,11 @@ import { AuthLayout } from '../components/layout/AuthLayout';
 import { Alert } from '../components/ui/Alert';
 import { useAuth } from '../context/auth';
 import { messageForCode } from '../utils/messages';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import styles from './LoginPage.module.css';
 
 export function LoginPage() {
+  useDocumentTitle('Ingresar');
   const { logoutReason, clearLogoutReason } = useAuth();
   const notice = logoutReason ? messageForCode(logoutReason) : null;
 
