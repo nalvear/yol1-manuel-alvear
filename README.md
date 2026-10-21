@@ -37,6 +37,11 @@ curl -X POST http://localhost:3000/login \
   -d '{"username":"usuario","password":"usuario123"}'
 ```
 
+```bash
+curl http://localhost:3000/score/12.345.678-5 \
+  -H 'Authorization: Bearer <token>'
+```
+
 ## Estructura
 
 ```

@@ -4,6 +4,7 @@ import { env } from './config/env.js';
 import { errorHandler } from './middlewares/error-handler.js';
 import { notFoundHandler } from './middlewares/not-found.js';
 import { authRouter } from './routes/auth.routes.js';
+import { scoreRouter } from './routes/score.routes.js';
 
 export const createApp = () => {
   const app = express();
@@ -17,6 +18,7 @@ export const createApp = () => {
   });
 
   app.use(authRouter);
+  app.use(scoreRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
