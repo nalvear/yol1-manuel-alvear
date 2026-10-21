@@ -71,6 +71,25 @@ Para validar el contrato:
 npx @redocly/cli lint backend/openapi.yaml
 ```
 
+## Frontend
+
+SPA con React + TypeScript (Vite) y React Router.
+
+- **Identidad visual**: basada en el lenguaje visual público de yol1.com, con los colores en `frontend/src/styles/tokens.css`:
+  - verde bosque `#0A332B` como fondo de marca;
+  - lima `#DAFF00` para la acción principal;
+  - coral `#FE5933` como acento;
+  - arena `#E8E3DA` para las tarjetas.
+  - La tipografía corporativa (Söhne) es comercial, así que se usan equivalentes libres: Archivo expandido para los títulos, Inter para el texto y JetBrains Mono para botones y etiquetas.
+- **Comunicación con el usuario**: todos los mensajes viven en `frontend/src/utils/messages.ts`, uno por código de error del contrato. Son directos, en segunda persona y siempre dicen qué hacer a continuación.
+- **Sesión**: `AuthProvider` guarda el token en `sessionStorage`, de modo que sobrevive a un refresh y se borra al cerrar la pestaña. La sesión se cierra en tres casos:
+  - cuando vence el token;
+  - cuando cualquier llamada responde `401` (`MISSING_TOKEN`, `INVALID_TOKEN` o `TOKEN_EXPIRED`), y la pantalla de login muestra el motivo;
+  - cuando el usuario cierra sesión.
+- **Rutas**: `/login` es solo para quien no tiene sesión y `/score` solo para quien la tiene.
+
+> Trade-off: una cookie `httpOnly` protegería mejor el token frente a XSS, pero requiere cambiar el contrato del API. Queda como mejora.
+
 ## Uso de IA
 
 Ver [ai_interactions.md](ai_interactions.md).

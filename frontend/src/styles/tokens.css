@@ -1,0 +1,85 @@
+/*
+ * Design tokens basados en la identidad visual pública de yol1.com.
+ * Söhne (la tipografía corporativa) es comercial: se reemplaza por equivalentes
+ * libres de Google Fonts con proporciones similares.
+ *   Söhne Breit → Archivo expandido (font-stretch 125%)
+ *   Söhne       → Inter
+ *   Söhne Mono  → JetBrains Mono
+ */
+:root {
+  /* Marca */
+  --color-forest: #0a332b; /* fondo principal de la marca */
+  --color-forest-90: #123f36;
+  --color-lime: #daff00; /* CTA principal */
+  --color-lime-hover: #c8eb00;
+  --color-coral: #fe5933; /* acento / alerta */
+  --color-coral-soft: #fff0eb;
+  --color-sand: #e8e3da; /* tarjetas */
+  --color-sand-soft: #f4f1ec;
+  --color-violet: #754cf0; /* enlaces */
+  --color-navy: #083247;
+  --color-mint: #32d8b9; /* estado positivo */
+  --color-mint-soft: #e6faf6;
+  --color-amber: #f5b638; /* estado intermedio */
+  --color-amber-soft: #fef6e4;
+
+  /* Neutros */
+  --color-ink: #0d0d0d;
+  --color-text: #1a1a1a;
+  --color-text-muted: #737373;
+  --color-border: #e0dcd4;
+  --color-surface: #ffffff;
+  --color-bg: #fafafa;
+  --color-on-dark: #ffffff;
+  --color-on-dark-muted: rgb(255 255 255 / 70%);
+  --color-on-dark-subtle: rgb(255 255 255 / 10%);
+
+  /* Semánticos */
+  --color-primary: var(--color-lime);
+  --color-primary-hover: var(--color-lime-hover);
+  --color-on-primary: var(--color-forest);
+  --color-danger: #d93d1a; /* coral oscurecido para contraste AA sobre blanco */
+  --color-danger-bg: var(--color-coral-soft);
+  --color-success: #127a66;
+  --color-success-bg: var(--color-mint-soft);
+  --color-warning: #8a5a00;
+  --color-warning-bg: var(--color-amber-soft);
+  --color-focus: var(--color-violet);
+
+  /* Tipografía */
+  --font-display: 'Archivo', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --display-stretch: 125%;
+  --display-tracking: -0.03em;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.5rem;
+  --text-2xl: clamp(1.75rem, 1.2rem + 2vw, 2.5rem);
+  --text-3xl: clamp(2.25rem, 1.4rem + 3.5vw, 3.75rem);
+
+  /* Espaciado (escala de 4px) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  /* Radios (píldoras para acciones, 20px para tarjetas) */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 100px;
+
+  --shadow-card: 0 1px 2px rgb(10 51 43 / 6%), 0 8px 24px rgb(10 51 43 / 8%);
+  --transition: 150ms ease;
+
+  --content-width: 1080px;
+  --header-height: 64px;
+}

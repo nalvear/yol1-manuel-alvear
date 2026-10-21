@@ -1,0 +1,19 @@
+.card {
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+}
+
+@media (min-width: 640px) {
+  .card {
+    padding: var(--space-6);
+  }
+}
+
+.surface {
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.sand {
+  background: var(--color-sand);
+}

@@ -1,0 +1,28 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.lime {
+  background: var(--color-lime);
+  color: var(--color-forest);
+}
+
+.sand {
+  background: var(--color-sand);
+  color: var(--color-forest);
+}
+
+.outline-dark {
+  border-color: rgb(255 255 255 / 30%);
+  color: var(--color-on-dark);
+}
