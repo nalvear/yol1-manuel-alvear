@@ -19,6 +19,24 @@ npm run dev
 - API: http://localhost:3000
 - Web: http://localhost:5173
 
+## Credenciales de prueba (mock)
+
+| Usuario    | Contraseña   | Rol     | RUT propio     |
+|------------|--------------|---------|----------------|
+| `admin`    | `admin123`   | `admin` | —              |
+| `usuario`  | `usuario123` | `user`  | `12.345.678-5` |
+| `usuario2` | `usuario123` | `user`  | `11.111.111-1` |
+
+Las contraseñas se guardan como hash scrypt en `backend/src/data/users.mock.ts`.
+
+> El RUT de ejemplo del enunciado (`12.345.678-9`) tiene un dígito verificador inválido; la API responde `400 INVALID_RUT` para ese valor. El RUT válido equivalente es `12.345.678-5`.
+
+```bash
+curl -X POST http://localhost:3000/login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"usuario","password":"usuario123"}'
+```
+
 ## Estructura
 
 ```
